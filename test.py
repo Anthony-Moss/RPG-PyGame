@@ -7,9 +7,28 @@ KEY_DOWN = 274
 KEY_LEFT = 276
 KEY_RIGHT = 275
 
+# # creating a Block class to hold games sprites
+# class newSprite(pygame.sprite.Sprite):
+#     def __init__(self, x, y, file_name):
+#         pygame.sprite.Sprite.__init__(self)
+#         # self.images = []
+#         # self.images.append(pygame.image.load(file_name))
+#         self.image = file_name
+#         self.x = x
+#         self.y = y
+#         self.rect = self.image.get_rect()
+#         self.rect.topleft=(0,0)
+#         self.mask = pygame.mask.from_surface(self.image)
+
+#     def update(self, rect_x, rect_y):
+#         self.rect.x = rect_x
+#         self.rect.y = rect_y
+
+
+
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x_dir, y_dir, name, avatar, width, height, attack, health):
+    def __init__(self, x_dir, y_dir, name, avatar, width, height):
         super().__init__()
         # self.x = x
         # self.y = y
@@ -18,8 +37,6 @@ class Player(pygame.sprite.Sprite):
         self.name = name
         self.image = avatar
         self.avatar = avatar.convert_alpha()
-        self.attack = attack
-        self.health = health
         self.rect = self.avatar.get_rect()
     
     def update(self, width, height):
@@ -38,18 +55,15 @@ class Player(pygame.sprite.Sprite):
         screen.blit(self.avatar, (self.rect.x, self.rect.y))
     
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, width, height, name, avatar, attack, health):
+    def __init__(self, width, height, name, avatar):
         super().__init__()
         # self.x = x
         # self.y = y
         self.avatar = avatar
         self.name = name
         self.image = avatar
-        self.attack = attack
 
         self.rect = self.avatar.get_rect()
-    
-
 
 class Combat(pygame.sprite.Sprite):
     def __init__(self, width, height, name, avatar, health, attack):
@@ -68,10 +82,6 @@ def main():
     width = 960
     height = 960
     blue =  (97, 159, 182)
-    black = (255, 255, 255)
-    red = (62, 6, 6)
-    green = (29, 167, 27)
-
 
     eto_start_x = randint(74, 896)
     eto_start_y = randint(74,896)
@@ -88,14 +98,11 @@ def main():
     block_list = pygame.sprite.Group()
     all_sprites_list = pygame.sprite.Group()
     combat_sprites_list = pygame.sprite.Group()
-    fighting_sprite_list = pygame.sprite.Group()
 
-    sir_david_quinith = Player(0, 0, "Sir David Quinith", pygame.image.load('images/quinith_wings.png').convert_alpha(), width, height, 0, 100)
+    sir_david_quinith = Player(0, 0, "Sir David Quinith", pygame.image.load('images/quinith_wings.png').convert_alpha(), width, height)
     sir_david_quinith.rect.x = 464
     sir_david_quinith.rect.y = 896
-    heavy_attack_count = 0
-    spell_attack_count = 0
-    
+    all_sprites_list.add(sir_david_quinith)
 
     sir_david_quinith_combat = Combat(width, height,  "Sir David Quinith", pygame.image.load('images/quinith_wings.png').convert_alpha(), 100, 15)
     sir_david_quinith_combat.rect.x = 230
@@ -106,74 +113,71 @@ def main():
     combat_sprites_list.add(sir_david_quinith_combat, enemy_combat)    
     
 
-    Eto = Monster(width, height, "Eto", pygame.image.load('images/demonspawn_red_m.png').convert_alpha(), 10, 90)
+    Eto = Monster(width, height, "Eto", pygame.image.load('images/demonspawn_red_m.png').convert_alpha())
     Eto.rect.x = eto_start_x
     Eto.rect.y = eto_start_y
 
+    block_list.add(Eto)
+    all_sprites_list.add(Eto)
 
-    Yakumo_Omori = Monster(omori_start_x, omori_start_y, "JASON", pygame.image.load('images/jason.png').convert_alpha(), 15, 100)
+    Yakumo_Omori = Monster(omori_start_x, omori_start_y, "JASON", pygame.image.load('images/jason.png').convert_alpha())
     Yakumo_Omori.rect.x = omori_start_x
     Yakumo_Omori.rect.y = omori_start_y
     
-    block_list.add(Yakumo_Omori, Eto)
-    all_sprites_list.add(sir_david_quinith, Yakumo_Omori, Eto)
+    block_list.add(Yakumo_Omori)
+    all_sprites_list.add(Yakumo_Omori)
         
     # Game initialization
     background_img = pygame.image.load('images/rpg_background_tilemap.png').convert_alpha()
     combat_background = pygame.image.load('images/background.png').convert_alpha()
     stop_game = False
     in_combat = False
-    do_attack = False
     while not stop_game:
         for event in pygame.event.get():
-            
+            if in_combat == False:
+
             # Event handling
-            if event.type == pygame.KEYDOWN:
-                if event.key == KEY_UP:
-                    sir_david_quinith.y_dir = -4
-                elif event.key == KEY_DOWN:
-                    sir_david_quinith.y_dir = 4
-                elif event.key == KEY_LEFT:
-                    sir_david_quinith.x_dir = -4
-                elif event.key == KEY_RIGHT:
-                    sir_david_quinith.x_dir = 4
+                if event.type == pygame.KEYDOWN:
+                    if event.key == KEY_UP:
+                        sir_david_quinith.y_dir = -3
+                    elif event.key == KEY_DOWN:
+                        sir_david_quinith.y_dir = 3
+                    elif event.key == KEY_LEFT:
+                        sir_david_quinith.x_dir = -3
+                    elif event.key == KEY_RIGHT:
+                        sir_david_quinith.x_dir = 3
+                    
+                    # elif event.key == pygame.K_RETURN:
+                    #     main()
 
-                elif event.key == pygame.K_1:
-                    sir_david_quinith.attack += 15
-                    for i in block_list:
-                        i.attack += randint(0,2)
-                        
-                elif event.key == pygame.K_2:
-                    if heavy_attack_count < 2:
-                        heavy_attack_count += 1
-                        sir_david_quinith.attack += 20
-                        for i in block_list:
-                            i.attack += randint(0,5)
-                            
-                elif event.key == pygame.K_3:
-                    if spell_attack_count < 2:
-                        spell_attack_count += 1
-                        sir_david_quinith.attack += 35
-                        for i in block_list:
-                            i.attack += randint(5,9)
-                            
-                elif event.key == pygame.K_q:
-                    main()
-                
-                # elif event.key == pygame.K_RETURN:
-                #     main()
+                    # deactivate the cooresponding speeds
+                    # when an arrow key is released
+                if event.type == pygame.KEYUP:
+                    if event.key == KEY_UP:
+                        sir_david_quinith.y_dir = 0
+                    elif event.key == KEY_DOWN:
+                        sir_david_quinith.y_dir = 0
+                    elif event.key == KEY_LEFT:
+                        sir_david_quinith.x_dir = 0
+                    elif event.key == KEY_RIGHT:
+                        sir_david_quinith.x_dir = 0
 
-                # deactivate the cooresponding speeds
-                # when an arrow key is released
-            if event.type == pygame.KEYUP:
-                if event.key == KEY_UP:
-                    sir_david_quinith.y_dir = 0
-                elif event.key == KEY_DOWN:
-                    sir_david_quinith.y_dir = 0
-                elif event.key == KEY_LEFT:
-                    sir_david_quinith.x_dir = 0
-                elif event.key == KEY_RIGHT:
-                    sir_david_quinith.x_dir = 0
+            if in_combat == True:
+                user_health = sir_david_quinith_combat.health
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        enemy_combat.health -= sir_david_quinith_combat.attack
+                        user_health -= enemy_combat.attack + randint(1,5)
+                    elif event.key == pygame.K_2:
+                        enemy_combat.health -= (sir_david_quinith_combat.attack) + 5
+                        user_health -= enemy_combat.attack + randint(1,5)
+                    elif event.key == pygame.K_3:
+                        enemy_combat.health -= (sir_david_quinith_combat.attack) * 2
+                        user_health -= enemy_combat.attack + randint(1,5)
+                    elif event.key == pygame.K_q:
+                        main()
+
+
 
             if event.type == pygame.QUIT:
                 stop_game = True
@@ -196,33 +200,16 @@ def main():
         # Game logic
         player_hit_list = pygame.sprite.spritecollide(sir_david_quinith, block_list, True)
         for block in player_hit_list:
-            fighting_sprite_list.add(block)
-
             # pygame.time.wait(3000)
             # Render text
-            font = pygame.font.Font(None, 25)
-            block = font.render("you killed %s!" % (block.name), True, (blue))
-            rect = block.get_rect()
-            rect.center = screen.get_rect().center
-            screen.blit(block, rect)
-            pygame.display.update()
-            in_combat = True
-        
-        if in_combat == True:
-            do_attack = True
+                font = pygame.font.Font(None, 25)
+                block = font.render("you killed %s!" % (block.name), True, (blue))
+                rect = block.get_rect()
+                rect.center = screen.get_rect().center
+                screen.blit(block, rect)
+                pygame.display.update()
+                in_combat = True
             
-            monster_health = 100
-            monster_attack = 10
-            user_attack = sir_david_quinith.attack
-            user_health = sir_david_quinith.health
-
-            if do_attack == True:
-                monster_health -= sir_david_quinith.attack
-                sir_david_quinith.health -= monster_attack
-                if monster_health <= 0:
-                    main()
-
-
 
         block_list.update(width, height)
         # Draw background
@@ -234,7 +221,7 @@ def main():
             sir_david_quinith.update(width,height)
             # if player is is in combat it loads the combat screen
         elif in_combat == True:
-            screen.fill(black)
+            screen.fill(blue)
             combat_screen.blit(combat_background, (224,240))
             combat_sprites_list.draw(combat_background)
 
@@ -249,14 +236,7 @@ def main():
             block2 = font.render("Press 2 for heavy attack", True, (blue))
             rect2= block2.get_rect().move(380,360)
             combat_screen.blit(block2, rect2)
-
-            block3 = font.render(str(monster_health), True, (red))
-            rect3= block3.get_rect().move(400,200)
-            combat_screen.blit(block3, rect3)
-
-            block4 = font.render(str(sir_david_quinith.health), True, (green))
-            rect4= block4.get_rect().move(600,400)
-            combat_screen.blit(block4, rect4)
+            pygame.display.update()
 
 
         # Game display
