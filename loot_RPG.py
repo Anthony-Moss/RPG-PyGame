@@ -102,7 +102,8 @@ def main():
     sir_david_quinith_combat.rect.y = 420
 
     enemy_combat = Combat(width, height, "name", pygame.image.load('images/jason.png').convert_alpha(), 90, 10)
-
+    enemy_combat.rect.x = 230
+    enemy_combat.rect.y = 75
     combat_sprites_list.add(sir_david_quinith_combat, enemy_combat)    
     
 
@@ -111,7 +112,7 @@ def main():
     Eto.rect.y = eto_start_y
 
 
-    Yakumo_Omori = Monster(omori_start_x, omori_start_y, "JASON", pygame.image.load('images/jason.png').convert_alpha(), 15, 100)
+    Yakumo_Omori = Monster(omori_start_x, omori_start_y, "JASON", pygame.image.load('images/jason.png').convert_alpha(), 0, 100)
     Yakumo_Omori.rect.x = omori_start_x
     Yakumo_Omori.rect.y = omori_start_y
     
@@ -124,6 +125,7 @@ def main():
     stop_game = False
     in_combat = False
     do_attack = False
+    lose = False
     while not stop_game:
         for event in pygame.event.get():
             
@@ -141,27 +143,25 @@ def main():
                 elif event.key == pygame.K_1:
                     sir_david_quinith.attack += 15
                     for i in block_list:
-                        i.attack += randint(0,2)
+                        i.attack += randint(10,20)
                         
                 elif event.key == pygame.K_2:
                     if heavy_attack_count < 2:
                         heavy_attack_count += 1
                         sir_david_quinith.attack += 20
-                        for i in block_list:
-                            i.attack += randint(0,5)
+                        Yakumo_Omori.attack += randint(10, 30)
                             
                 elif event.key == pygame.K_3:
                     if spell_attack_count < 2:
                         spell_attack_count += 1
                         sir_david_quinith.attack += 35
-                        for i in block_list:
-                            i.attack += randint(5,9)
+                        Yakumo_Omori.attack += (randint(30, 50))
                             
-                elif event.key == pygame.K_q:
+                elif event.key == pygame.K_RETURN:
                     main()
                 
-                # elif event.key == pygame.K_RETURN:
-                #     main()
+                elif event.key == pygame.K_q:
+                    stop_game = True
 
                 # deactivate the cooresponding speeds
                 # when an arrow key is released
@@ -212,15 +212,17 @@ def main():
             do_attack = True
             
             monster_health = 100
-            monster_attack = 10
+            monster_attack = Yakumo_Omori.attack
             user_attack = sir_david_quinith.attack
             user_health = sir_david_quinith.health
 
             if do_attack == True:
                 monster_health -= sir_david_quinith.attack
-                sir_david_quinith.health -= monster_attack
+                user_health -= Yakumo_Omori.attack
                 if monster_health <= 0:
-                    main()
+                    in_combat = False
+                if user_health <= 0:
+                    lose = True
 
 
 
@@ -240,23 +242,33 @@ def main():
 
             font = pygame.font.Font(None, 25)
             block = font.render("Press 1 for normal attack", True, (blue))
-            rect = block.get_rect()
-            rect.center = combat_screen.get_rect().center
+            rect = block.get_rect().move(380, 500)
             screen.blit(block, rect)
 
             # pygame.display.update()
             # font2 = pygame.font.Font(None, 25)
             block2 = font.render("Press 2 for heavy attack", True, (blue))
-            rect2= block2.get_rect().move(380,360)
+            rect2= block2.get_rect().move(380,550)
             combat_screen.blit(block2, rect2)
 
+            block5 = font.render("Press 3 for heavy attack", True, (blue))
+            rect5= block2.get_rect().move(380,600)
+            combat_screen.blit(block5, rect5)
+
             block3 = font.render(str(monster_health), True, (red))
-            rect3= block3.get_rect().move(400,200)
+            rect3= block3.get_rect().move(455,350)
             combat_screen.blit(block3, rect3)
 
-            block4 = font.render(str(sir_david_quinith.health), True, (green))
-            rect4= block4.get_rect().move(600,400)
+            block4 = font.render(str(user_health), True, (green))
+            rect4= block4.get_rect().move(460,620)
             combat_screen.blit(block4, rect4)
+
+            if lose == True:
+                font_lose = pygame.font.Font(None, 30)
+                block_lose = font_lose.render("You lose! Press enter to resart, or 'q' to exit!", True, (red))
+                rect_lose = block_lose.get_rect()
+                rect_lose.center = screen.get_rect().center
+                combat_screen.blit(block_lose, rect_lose)
 
 
         # Game display
