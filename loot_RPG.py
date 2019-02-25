@@ -68,10 +68,14 @@ def main():
     width = 960
     height = 960
     blue =  (97, 159, 182)
-    black = (255, 255, 255)
+    black = (0, 0, 0)
+    white = (255, 255, 255)
     red = (62, 6, 6)
     green = (29, 167, 27)
+    dark_blue = (15, 41, 46)
     bright_pink = (204, 46, 110)
+    grey = (205, 205, 205)
+    cyan = (8, 159, 152)
 
     # enemy_starts_x = []
     # enemy_starts_y = []
@@ -164,24 +168,50 @@ def main():
     # Game initialization
     background_img = pygame.image.load('images/rpg_background_tilemap.png').convert_alpha()
     combat_background = pygame.image.load('images/combat_background.png').convert_alpha()
+    intro = False
     stop_game = False
     in_combat = False
     do_attack = False
     lose = False
     win = False
+
+    while intro == False:
+        screen.fill(dark_blue)
+        intro_font = pygame.font.SysFont('Inconsolata-Bold.ttf', 40)
+        intro_label_1 = intro_font.render("Press any key to Start", True, bright_pink)
+        intro_label_2 = intro_font.render("Use arrow keys to move character", True, bright_pink)
+        intro_label_3 = intro_font.render("Press enter to restart game", True, bright_pink)
+        intro_label_4 = intro_font.render("Move character to enemies to increase attack", True, bright_pink)
+        intro_label_5 = intro_font.render("When ready move to top and fight Jason!", True, bright_pink)
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                    intro = True
+            if event.type == pygame.QUIT:
+                intro = True
+                stop_game = True
+        screen.blit(intro_label_1, (330, 150))
+        screen.blit(intro_label_2, (255, 300))
+        screen.blit(intro_label_3, (315, 450))
+        screen.blit(intro_label_4, (180, 600))
+        screen.blit(intro_label_5, (200, 750))
+        pygame.display.flip()
+
+
     while not stop_game:
+    
         for event in pygame.event.get():
             
             # Event handling
             if event.type == pygame.KEYDOWN:
                 if event.key == KEY_UP:
-                    sir_david_quinith.y_dir = -4
+                    sir_david_quinith.y_dir = -6
                 elif event.key == KEY_DOWN:
-                    sir_david_quinith.y_dir = 4
+                    sir_david_quinith.y_dir = 6
                 elif event.key == KEY_LEFT:
-                    sir_david_quinith.x_dir = -4
+                    sir_david_quinith.x_dir = -6
                 elif event.key == KEY_RIGHT:
-                    sir_david_quinith.x_dir = 4
+                    sir_david_quinith.x_dir = 6
 
                 elif event.key == pygame.K_1:
                     sir_david_quinith.attack += 15 + extra_attack
@@ -281,7 +311,7 @@ def main():
             sir_david_quinith.update(width,height)
 
             font = pygame.font.Font(None, 30)
-            block_extra_attack = font.render("Extra character attack: %d" % extra_attack, True, (bright_pink))
+            block_extra_attack = font.render("Character attack power: %d" % extra_attack, True, (bright_pink))
             rect_extra_attack = block_extra_attack.get_rect().move(50, 50)
             screen.blit(block_extra_attack, rect_extra_attack)
 
@@ -305,11 +335,11 @@ def main():
                 rect2= block2.get_rect().move(364,470)
                 combat_screen.blit(block2, rect2)
 
-                block5 = font.render("Press 3 for heavy attack", True, (blue))
+                block5 = font.render("Press 3 for spell attack", True, (blue))
                 rect5= block2.get_rect().move(364,520)
                 combat_screen.blit(block5, rect5)
 
-                block3 = font.render(str(monster_health), True, (red))
+                block3 = font.render(str(monster_health), True, (bright_pink))
                 rect3= block3.get_rect().move(449,350)
                 combat_screen.blit(block3, rect3)
 
